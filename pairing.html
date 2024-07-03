@@ -1,0 +1,1061 @@
+<!-- saved from url=(0063)https://users.metu.edu.tr/home202/benjamin/wwwhome/pairing.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<title>Lie Algebra/Coalgebra Pairing Calculator</title>
+
+
+<script type="text/javascript">
+
+var pos=0;          // used to keep track of string position when making Lie data structure (ugly hack)
+var cellWidth=100;  // used to make cell width changes be sticky
+
+///////////////////////////////////////////////////////////////////////////////
+// createLie
+//    begin building a Lie tree for an expression  (ugly hack using global variable pos)
+//    sets pos=0 then starts tree recursion
+//
+function createLie(expression) { 
+	pos=0;
+
+	return new Lie(expression);
+}
+///////////////////////////////////////////////////////////////////////////////
+// Lie
+//   constructor for Lie trees -- recursively creates Lie trees from bracket expressions
+//   should only be called by createLie(), which sets pos=0
+//
+function Lie(expression) { 
+	this.weight = 1;
+	this.word = "";
+
+	if (expression.charAt(pos) != '[') {
+		this.word = expression.charAt(pos);
+		pos++;
+	}
+	else {
+		pos++;
+		this.left = new Lie(expression);
+		this.right = new Lie(expression);
+		this.word = this.left.word + this.right.word;
+		this.weight = this.left.weight + this.right.weight;
+	}
+	while ((pos < expression.length) && 
+		((expression[pos] == ',') || (expression[pos] == ']'))) 
+		pos++;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// computePair
+//    begins pairing computation by checking weakPair() then starting a pair() recursion
+//
+function computePair(lie, eil) {
+	if (weakpair(lie.word, eil))
+		return pair(lie, eil);
+
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////
+// pair
+//    recursively compute pairing of a Lie tree and an Eil word using bracket/cobracket duality
+//    should only be called by computePair() which does initial weak pairing computation
+//
+function pair(lie, eil) {        
+	if (lie.weight == 1)          
+		return (lie.word == eil)? 1 : 0;
+
+	pairing=0;
+
+	if (weakpair(lie.left.word, eil.substr(0,lie.left.weight)))
+		pairing += pair(lie.left, eil.substr(0,lie.left.weight)) * pair(lie.right, eil.substr(lie.left.weight, lie.right.weight));
+	
+	if (weakpair(lie.right.word, eil.substr(0,lie.right.weight)))
+		pairing -= pair(lie.right, eil.substr(0,lie.right.weight)) * pair(lie.left, eil.substr(lie.right.weight, lie.left.weight));
+
+	return pairing;
+}
+///////////////////////////////////////////////////////////////////////////////////
+// weakpair
+//   rough pairing check on strings -- see if the numbers of letters match
+//
+function weakpair(lie, eil) {  
+
+	return ((lie.replace(/0/gi,'').length == eil.replace(/0/gi,'').length) &&
+			(lie.replace(/1/gi,'').length == eil.replace(/1/gi,'').length) &&
+			(lie.replace(/2/gi,'').length == eil.replace(/2/gi,'').length) &&
+			(lie.replace(/3/gi,'').length == eil.replace(/3/gi,'').length) &&
+			(lie.replace(/4/gi,'').length == eil.replace(/4/gi,'').length) &&
+			(lie.replace(/5/gi,'').length == eil.replace(/5/gi,'').length) &&
+			(lie.replace(/6/gi,'').length == eil.replace(/6/gi,'').length) &&
+			(lie.replace(/7/gi,'').length == eil.replace(/7/gi,'').length) &&
+			(lie.replace(/8/gi,'').length == eil.replace(/8/gi,'').length) &&
+			(lie.replace(/9/gi,'').length == eil.replace(/9/gi,'').length))
+}
+
+//////////////////////////////////////////////////////////////////
+// addCol
+//   adds a column to the data table
+//   optional second argument gives Lie bracket element for column
+//
+function addCol(tblId, bracketValue) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	bracketValue = (typeof bracketValue === "undefined") ? "" : bracketValue;
+
+	var newCell = tbl.rows[0].insertCell(tbl.rows[0].cells.length-1);
+	var newLie = document.createElement('input');
+	newLie.type = "text";
+	newLie.name = "lie"+(tbl.rows[0].cells.length-2);
+	newLie.id = "lie"+(tbl.rows[0].cells.length-2);
+	newLie.value = bracketValue;
+	newLie.style.width = cellWidth;
+	newCell.appendChild(newLie);
+
+	for (var i=1; i<tbl.rows.length; i++) {
+		var newCell = tbl.rows[i].insertCell(tbl.rows[0].cells.length-2);
+		newCell.innerHTML=" ";
+	}
+}
+///////////////////////////////////////////////////////////////////
+// addRow
+//    adds a row do the data table
+//    optional second argument gives value of Eil word
+//
+function addRow(tblId, wordValue) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	wordValue = (typeof wordValue === "undefined") ? "" : wordValue;
+
+	var newRow = tbl.insertRow(tbl.rows.length-1);
+	var newCell = newRow.insertCell(-1);
+	var newEil = document.createElement('input');
+	newRow.id = "eilRow"+(tbl.rows.length-2);
+	newEil.type = "text";
+	newEil.name = "eil"+(tbl.rows.length-2);
+	newEil.id = "eil"+(tbl.rows.length-2);
+	newEil.style = "float:right;";
+	newEil.size = 10;
+	newEil.value = wordValue;
+	newCell.appendChild(newEil);
+
+	for (var i=1; i<tbl.rows[0].cells.length-1; i++)
+		newRow.insertCell(-1);
+	lastCell = newRow.insertCell(-1);
+	
+	var cycleButton = document.createElement('input');
+	cycleButton.setAttribute('type','button');
+	cycleButton.setAttribute('value','cycle');
+	lastCell.appendChild(cycleButton);
+	cycleButton.onclick = function(){cycleRow(newEil.id)};
+}
+//////////////////////////////////////////////////////////////////
+//  delCol
+//    deletes a column from the data table
+//
+function delCol(tblId) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	
+	if (tbl.rows[0].cells.length > 3) {
+		for (var i = tbl.rows.length - 1; i>= 0; i--) {
+			tbl.rows[i].deleteCell(tbl.rows[0].cells.length-2);
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////
+//  delRow
+//    deletes a row from the data table
+//
+function delRow(tblId) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+
+	if (tbl.rows.length > 3) {
+		tbl.deleteRow(tbl.rows.length-2);
+	}
+}
+//////////////////////////////////////////////////////////////////////
+// cycleRow
+//    changes the word in a row to the next ranked word in its cyclic class
+//    ---> SLOW
+//
+function cycleRow(eilId) {
+
+	var tbl = document.getElementById("data").tBodies[0];
+	var form = document.getElementById("computations");
+
+	resetOutput();
+	for(i=1; i<tbl.rows.length-1; i++)  {       // clear old results
+		if(tbl.rows[i].id == "eilRow" + eilId.substr(3)) {  
+			for(j=1; j<tbl.rows[0].cells.length-1; j++)
+				tbl.rows[i].cells[j].innerHTML = ""; 
+		}
+	}
+
+	for (eilWord=0; eilWord<form.elements.length-3; eilWord++) {  
+		if (form.elements[eilWord].type=="text") {
+			if (form.elements[eilWord].name == eilId) { 
+				word = form.elements[eilWord].value;
+				nextword = "9"; firstword = word;
+				for (i=1; i<word.length; i++) {
+					next = word.substring(i) + word.substring(0,i);
+					if ((next > word) && (next < nextword))
+						nextword = next;
+					if (next < firstword)
+						firstword = next;
+				}
+				if (nextword != "9") 
+					form.elements[eilWord].value = nextword;
+				else
+					form.elements[eilWord].value = firstword;
+			}
+		}
+	}
+
+	doPairing();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// genLS
+//   generates a list of LS words with letters from the first Eil word in data table 
+//   --> used for genEil() and genLieType()
+//
+function genLS(tblId) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	var form = document.getElementById("computations");
+
+	var LSWords = [];
+
+	for (eilStart=0; eilStart<form.elements.length; eilStart++) {  // read first coalgebra element
+		if (form.elements[eilStart].type=="text") {
+			if (form.elements[eilStart].name.charAt(0)=="e") { 
+				word = form.elements[eilStart].value;
+				break;
+			}
+		}
+	}
+
+	var alphabet = "";
+
+	for (a=0; a<=9; a++) {
+		if (word.indexOf(a) != -1)
+			alphabet = alphabet + a;
+	}
+	if (alphabet == "") return;
+
+	var N = word.length;
+	var n = [
+		word.split("0").length,
+		word.split("1").length,
+		word.split("2").length,
+		word.split("3").length,
+		word.split("4").length,
+		word.split("5").length,
+		word.split("6").length,
+		word.split("7").length,
+		word.split("8").length,
+		word.split("9").length,
+		];
+
+	LSword = alphabet[0];
+	var k = 0;
+
+	while (LSword != -1){
+		if ((LSword.length == N) && 
+				(LSword.split("0").length == n[0]) && 
+        (LSword.split("1").length == n[1]) && 
+        (LSword.split("2").length == n[2]) && 
+        (LSword.split("3").length == n[3]) && 
+        (LSword.split("4").length == n[4]) && 
+        (LSword.split("5").length == n[5]) && 
+        (LSword.split("6").length == n[6]) && 
+        (LSword.split("7").length == n[7]) && 
+        (LSword.split("8").length == n[8]) && 
+			  (LSword.split("9").length == n[9])) 
+
+			LSWords.push( LSword );
+
+		LSword = wordRepeat(LSword, Math.ceil(N / LSword.length));
+		LSword = LSword.substr(0,N);
+		LSword = wordInc(LSword, alphabet);
+	}	
+
+	return LSWords;
+}
+////////////////////////////////////////////////////////////////////////
+// wordRepeat
+//    helper function for genLS (generating list of LS words)
+//    repeats a word a few times
+//
+function wordRepeat(word, n) {
+	var wordRep = '';
+	for (;;) {
+		if (n & 1) 
+			wordRep += word;
+		n >>= 1;
+		if (n)
+			word += word;
+		else
+			break;
+	}
+	return wordRep;
+}
+/////////////////////////////////////////////////////////////////////////
+// wordInc
+//   helper function for genLS (generating list of LS words)
+//   increases an LS word to next ranked LS word
+//
+function wordInc(word, alphabet) {
+	var z = alphabet[alphabet.length-1];
+	var i;
+
+	for (i=word.length-1; i>0; i--) {
+		if (word[i] != z) {
+			return word.substr(0,i)+alphabet[alphabet.indexOf(word[i])+1];
+		}
+	}
+	return -1;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//  genEil
+//     generates standard LS words based on the alphabet in the first word box
+//     fills the words column with all of the words which are generated
+//
+function genEil(tblId, toWord) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	var form = document.getElementById("computations");
+
+	resetOutput();
+
+	LSWords = genLS(tblId);
+
+	while(tbl.rows.length > 2)
+		tbl.deleteRow(tbl.rows.length-2);
+
+	for (j=0; j<LSWords.length; j++) 
+		addRow(tblId, toWord( LSWords[j] ));
+
+	var output = new String("<ul><li> Generated "+LSWords.length+" LS words with the following letters:");
+
+	if (LSWords.length == 0)
+		output = "Space has dimension 0!";
+	else
+		for(i=0;i<10;i++) 
+			if (LSWords[0].split(i).length != 1) 
+				output = output + "<br> #"+i+"s = " + (LSWords[0].split(i).length-1);
+
+	document.getElementById("Gen colie").innerHTML = output;
+
+	doPairing();
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+//  bracketWordLS
+//     creates the standard LS bracketing of an LS word
+//
+function bracketWordLS( word ) {
+	if (word.length <= 1)
+		return word;
+
+	var end = word.length - 1;
+	var newPrefix = 1;
+	var myPrefix = 0;
+	var newCut = end;
+	var repeat = 1;
+
+	for (var j = end-1; j > 0; j--) {
+		if (repeat == 1) { 
+			if (word[j] == word[end])
+				end--;
+			else { 
+				repeat = 0;
+				end = word.length - 1;
+			}
+		} 
+		if (word[j] > word[newCut])
+			myPrefix = 0;
+		else {
+			if (word[j] == word[newCut]) { 
+				myPrefix++;
+				if (repeat == 0) {
+					if (myPrefix == newPrefix) {  // compare new cutpoint to old cutpoint 
+						var i = 1;
+						for (i = 1; word[i+j] == word[i+newCut]; i++) ;
+						if (word[i+j] < word[i+newCut]) {
+							newCut = j;
+							repeat = 1;	
+						}
+					} 
+					if (myPrefix > newPrefix) {    // found longer prefix -- new cutpoint
+						newPrefix = myPrefix;
+						newCut = j;
+						repeat = 1;
+					}
+				}
+			} else {                          // found new low -- new cutpoint
+				newPrefix = 1;
+				myPrefix = 1;
+				newCut = j;
+				repeat = 1;
+			}
+		}
+	}
+
+	return "[" + bracketWordLS(word.substring(0,newCut)) + bracketWordLS(word.substring(newCut)) + "]";
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+//  bracketWordLeftGreedy
+//     creates the left-greedy bracketing of a single LS word
+//
+function bracketWordLeftGreedy( word ) {
+
+	if (word.length <= 1)
+		return word;
+
+	var i = 0;
+	var j = 1;
+
+	for(j=1;  (j < word.length-1) && (word[i] <= word[j]); j++)  {
+		if ( word[i] == word[j] )
+			i = i+1;
+		else
+			i = 0;
+	}
+
+	return "[" + bracketWordLeftGreedy(word.substr(0,j-i)) + bracketWordLeftGreedy(word.substr(j-i)) + "]";
+}
+///////////////////////////////////////////////////////////////////////////////////
+// bracketWordRightGreedy
+//    creates right-greedy bracketing of a single LS word
+//
+function bracketWordRightGreedy( word ) {
+	return bracketRG( word.split('') );
+}
+function bracketRG( word ) {
+	if (word.length <= 1)
+		return word[0];
+
+	var i = 1;
+	var newWord = [];
+
+	for (i=1; i < word.length; i++) {
+		if (word[i] != word[0]) {
+			var subWord = "[" + word[i-1] + word[i] + "]";
+			for (i++; (i < word.length) && (word[i] != word[0]); i++)
+				subWord = "[" + subWord + word[i]+"]";
+			newWord.push( subWord );
+		} else
+			newWord.push( word[i-1] );
+	}	
+
+	return bracketRG( newWord );
+}
+///////////////////////////////////////////////////////////////////////////////////
+// bracketWordConfig
+//    creates the Configuration bracketing of a single LS word
+//    --> left-greedy word-sensitive bracketing
+//
+function bracketWordConfig( word ) {
+	return bracketConfig( word.split('') );
+}
+function bracketConfig( word ) {
+	if (word.length <= 1) 
+		return word[0];
+
+	var subWord = ""; 
+	var newWord = [];
+
+	var start=0;              // start of current subword
+	for (var i=1; i<word.length; i++) {
+
+		subWord = "[" + word[start];
+
+		for ( ; word[i] == word[0]; i++) 
+			subWord = subWord + "[" + word[i];
+
+		subWord = subWord + word[i] + "]";
+
+		for (start++ ; start < i; start++)
+			subWord = subWord + "]";
+
+		for (i++ ; (i<word.length) && (word[i] != word[0]); i++) 
+			subWord = "[" + subWord + word[i] + "]";
+
+		newWord.push( subWord );
+
+		start = i;              // start of next subword 
+	}
+
+	return bracketConfig( newWord );
+}
+///////////////////////////////////////////////////////////////////////////////////
+// bracketWordChib
+//    creates the Chibrikov bracketing of a single LS word
+//    --> right-greedy word-sensitive bracketing
+//
+function bracketWordChib( word ) {
+	return bracketChib( word.split('') );
+}
+function bracketChib( word ) {
+	if (word.length <= 1)
+		return word[0];
+
+	var subWord = "";
+	var newWord = [];
+
+	var end=word.length-1;              // end of current subword
+
+	for (var i=word.length-2; i>-1; i--) {
+
+		subWord = word[end] + "]";
+
+		for ( ; word[i] != word[0]; i--) 
+			subWord = word[i] + "]" + subWord;
+
+		subWord = "[" + word[i] + subWord;
+
+		for (end-- ; end > i; end--)
+			subWord = "[" + subWord;
+
+		for (i-- ; (i>=0) && (word[i] == word[0]); i--) 
+			subWord = "[" + word[i] + subWord + "]";
+
+		newWord.unshift( subWord );
+
+		end = i;              // end of next subword 
+	}
+
+	return bracketChib( newWord );
+}
+//////////////////////////////////////////////////////////////////////////////// 
+// bracketDLWordConfig
+//   creates a Configuration bracketing of word in deg-lex ordering
+//   (assuming start word is LS)  --> left-greedy bracketing
+//
+function bracketDLWordConfig( word ) {
+	return bracketConfig( toDLWord(word).split('') );
+}
+//////////////////////////////////////////////////////////////////////////////// 
+// bracketDLWordChib
+//   creates a Chibrikov bracketing of word in deg-lex ordering
+//   (assuming start word is LS)  --> right-greedy bracketing
+//
+function bracketDLWordChib( word ) {
+	return bracketChib( toDLWord(word).split('') );
+}
+////////////////////////////////////////////////////////////////////////////////
+// toLSWord
+//   does nothing
+//
+function toLSWord( word ) {
+	return word;
+}
+//////////////////////////////////////////////////////////////////////////////// 
+// toDLWord
+//   converts LS word to DL word 
+//
+function toDLWord( word ) {
+	return toDL( word.split(''), word.charAt(0) );
+}
+function toDL( word, wordMin ) {
+	if (word.length <=1 )
+			return word[0];
+
+	var i, j;
+	var newWord = [];
+	var newMin = "999999999999999999";
+
+	for (i=0; (i < word.length) && (word[i] != wordMin); i++) ;
+
+	j = i;
+
+	while (i < word.length+j)  {
+
+		var subWord = word[i];
+
+		for (i++ ; (i < word.length) && (word[i] == wordMin); i++)  {
+			subWord = subWord+word[i];
+		}
+		
+		if (i != word.length)
+			subWord = subWord+word[i];
+		else 
+			i--;
+
+		for (i++ ; (i < word.length + j) && (word[i] != wordMin); i++)
+			subWord = subWord+word[(i % word.length)];
+
+		newWord.push( subWord );
+		if (parseInt(subWord.replace(/\D/g,'')) < parseInt(newMin.replace(/\D/g,''))) 
+			newMin = subWord;
+	}
+
+	return toDL( newWord, newMin );
+}
+
+
+//////////////////////////////////////////////////////////////////////////////// 
+// toLieType  
+//   Converts words in the Eil column to Lie brackets using indicated bracket function
+//    --> May give nonsense for non LS words.
+//
+// CURRENTLY NOT USED
+//
+function toLieType(tblId,bracketWordType) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	var form = document.getElementById("computations");
+
+	resetOutput();
+
+	while (tbl.rows[0].cells.length > 2) {
+		for (var i = tbl.rows.length - 1; i>= 0; i--) {
+			tbl.rows[i].deleteCell(tbl.rows[0].cells.length-2);
+		}
+	}
+
+	for (eilWord=0; eilWord<form.elements.length; eilWord++) {  
+		if (form.elements[eilWord].type=="text") {
+			if (form.elements[eilWord].name.charAt(0)=="e") { 
+
+				var newCell = tbl.rows[0].insertCell(tbl.rows[0].cells.length-1);
+				var newLie = document.createElement('input');
+				newLie.type = "text";
+				newLie.name = "lie"+(tbl.rows[0].cells.length-2);
+				newLie.id = "lie"+(tbl.rows[0].cells.length-2);
+				newLie.value = bracketWordType(form.elements[eilWord].value);
+				newCell.appendChild(newLie);
+
+				for (var i=1; i<tbl.rows.length; i++) {
+					var newCell = tbl.rows[i].insertCell(tbl.rows[0].cells.length-2);
+					newCell.innerHTML=" ";
+				}
+				eilWord++;
+	
+			}
+		}
+	}
+
+	doPairing();
+}
+
+//////////////////////////////////////////////////////////////////////////////// 
+// genLieType
+//   generates Lie brackets from standard LS words using indicated bracket function
+//
+function genLieType(tblId, bracketWordType, bracketName) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	var form = document.getElementById("computations");
+
+	resetOutput();
+
+	LSWords = genLS(tblId);
+
+	while (tbl.rows[0].cells.length > 2) {
+		for (var i = tbl.rows.length - 1; i>= 0; i--) {
+			tbl.rows[i].deleteCell(tbl.rows[0].cells.length-2);
+		}
+	}
+
+	for (j=0; j<LSWords.length; j++) 
+		addCol(tblId, bracketWordType( LSWords[j] ));
+
+	var output = new String("<ul><li> Generated "+LSWords.length+" "+bracketName+" Lie brackets with the following letters:");
+
+	if (LSWords.length == 0)
+		output = "Space has dimension 0!";
+	else
+		for(i=0;i<10;i++) 
+			if (LSWords[0].split(i).length != 1) 
+				output = output + "<br> #"+i+"s = " + (LSWords[0].split(i).length-1);
+
+	document.getElementById("Gen lie").innerHTML = output;
+
+	doPairing();
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// cycleLetter
+//    cycles all Eil words by one letter
+//
+function cycleLetter(tblId) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	var form = document.getElementById("computations");
+
+	resetOutput();
+	for(i=1; i<tbl.rows.length-1; i++)         // clear old results
+		for(j=1; j<tbl.rows[0].cells.length-1; j++)
+			tbl.rows[i].cells[j].innerHTML = ""; 
+
+
+	for (eilWord=0; eilWord<form.elements.length; eilWord++) {  
+		if (form.elements[eilWord].type=="text") {
+			if (form.elements[eilWord].name.charAt(0)=="e") { 
+				word = form.elements[eilWord].value;
+				form.elements[eilWord].value = word.substring(1) + word.substring(0,1);
+			}
+		}
+	}
+
+	doPairing();
+}
+
+//////////////////////////////////////////////////////////////////////
+//  cycleHalf
+//      cycles the second half of the Eil words to the next cyclic ordering
+//  
+//
+function cycleHalf(tblId) {
+	var tbl = document.getElementById(tblId).tBodies[0];
+	var form = document.getElementById("computations");
+
+	resetOutput();
+	for(i=1; i<tbl.rows.length-1; i++)         // clear old results
+		for(j=1; j<tbl.rows[0].cells.length-1; j++)
+			tbl.rows[i].cells[j].innerHTML = ""; 
+
+	for(row=Math.ceil(tbl.rows.length/2); row<tbl.rows.length-1; row++) 
+		cycleRow("eil"+row);
+
+	doPairing();
+}
+
+////////////////////////////////////////////////////////////////////////
+// resetOutput
+//    erases all outputs on the webpage (used when updating)
+//
+function resetOutput() {
+	document.getElementById("invertibility").innerHTML = ""; 
+	document.getElementById("Lie dep").innerHTML = "";
+	document.getElementById("Eil dep").innerHTML = "";
+	document.getElementById("nonzero").innerHTML = "";
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+// doPairing
+//    computes the pairing of all Eil words and Lie brackets in the data matrix
+//    --> converts Lie brackets to data structures with createLie()
+//    --> pairs elements using computePair()
+//
+function doPairing(){
+	var lie = new Array();
+	var eil = new Array();
+	var tbl = document.getElementById("data").tBodies[0];
+	var form = document.getElementById("computations");
+
+	for (i=0; i<form.elements.length; i++) {  // read algebra and coalgebra elements
+		if (form.elements[i].type=="text") {
+			if (form.elements[i].name.charAt(0)=="l") { 
+				if (form.elements[i].value != "") 
+					lie[form.elements[i].name.slice(3)] = createLie(form.elements[i].value);
+				else
+					lie[form.elements[i].name.slice(3)] = createLie("L");
+			}
+			else {
+				if (form.elements[i].value != "")
+					eil[form.elements[i].name.slice(3)] = form.elements[i].value;
+				else 
+					eil[form.elements[i].name.slice(3)] = "E";
+			}
+		}
+	}
+
+	var nonzero = 0;
+
+	for(i=1; i<tbl.rows.length-1; i++)         // insert results
+		for(j=1; j<tbl.rows[0].cells.length-1; j++) {
+			tbl.rows[i].cells[j].innerHTML = computePair(lie[j], eil[i]); 
+			if (tbl.rows[i].cells[j].innerHTML == "0")
+				tbl.rows[i].cells[j].style.backgroundColor = "white";
+			else {
+				tbl.rows[i].cells[j].style.backgroundColor = "LightCoral";
+				nonzero++;
+			}
+		}
+
+	resetOutput();
+
+	document.getElementById("nonzero").innerHTML = nonzero;
+}
+
+////////////////////////////////////////////////////////////////////////
+// checkInv
+//    reads the data matrix
+//    uses dependentCols() to check if the matrix is invertible
+//
+function checkInv(tblId){                          
+	var tbl = document.getElementById(tblId).tBodies[0];
+
+	var matrix = new Array(tbl.rows.length);   // pairing matrix
+	var P = new Array(tbl.rows.length);        // row permutation for Gauss elim 
+	var rows = tbl.rows.length;
+	var cols = tbl.rows[1].cells.length;
+
+
+	for (i=1; i<rows; i++) {                   // read pairing matrix, set up P
+		P[i] = i;
+		matrix[i] = new Array(cols);
+
+		for (j=1; j<cols; j++) { 
+			matrix[i][j] = parseInt(tbl.rows[i].cells[j].innerHTML);
+			if (isNaN(matrix[i][j]))
+				(i==1) ? cols = j : rows = i;
+		}
+	}
+
+	var dependencies = dependentCols(matrix, P, rows, cols);
+	var result = ((dependencies.length==0) && (tbl.rows.length == tbl.rows[1].cells.length));
+
+	document.getElementById("invertibility").innerHTML = (result) ? "Yes" : "No"; 
+}
+
+////////////////////////////////////////////////////////////////////////
+// checkLie
+//    reads the data matrix
+//    uses dependentCols() to check if the matrix is invertible
+//
+function checkLie(tblId){
+	var tbl = document.getElementById(tblId).tBodies[0];
+
+	var matrix = [];                              // pairing matrix
+	var P = [];                                   // row permutation for Gauss elim 
+	var rows = tbl.rows.length;
+	var cols = tbl.rows[1].cells.length;
+
+
+	for (var i=1; i<rows; i++) {                   // read pairing matrix, set up P
+		P[i] = i;
+		matrix[i] = [];
+
+		for (var j=1; j<cols; j++) { 
+			matrix[i][j] = parseInt(tbl.rows[i].cells[j].innerHTML);
+			if (isNaN(matrix[i][j]))
+				(i==1) ? cols = j : rows = i;
+		}
+	}
+
+	var dependencies = dependentCols(matrix, P, rows, cols);
+	
+	if (dependencies.length == 0) 
+		output = "<ul><li>Lie elements are independent!</li></ul>\n";	
+	else {
+		var output = new String("<ul>");
+		for (i=0; i<dependencies.length; i++)
+			output = output + "<li>" + document.getElementById("lie"+(dependencies[i])).value + " (column " + dependencies[i] + ") is not independent of earlier columns.</li>\n"; 
+		output = output + "</ul>\n";
+	}
+
+	document.getElementById("Lie dep").innerHTML = output;
+}
+
+//////////////////////////////////////////////////////////////////////
+// checkEil
+//    reads the data matrix transposed
+//    uses dependentCols() to check if the matrix is invertible
+//
+function checkEil(tblId){
+	var tbl = document.getElementById(tblId).tBodies[0];
+
+	var matrix = new Array(tbl.rows[1].cells.length);   // pairing matrix
+	var P = new Array(tbl.rows[1].cells.length);        // row permutation for Gauss elim 
+	var rows = tbl.rows[1].cells.length;
+	var cols = tbl.rows.length;
+
+
+	for (var i=1; i<rows; i++) {                   // read pairing matrix, set up P
+		P[i] = i;
+		matrix[i] = new Array(cols);
+
+		for (var j=1; j<cols; j++) { 
+			matrix[i][j] = parseInt(tbl.rows[j].cells[i].innerHTML);
+			if (isNaN(matrix[i][j]))
+				(i==1) ? cols = j : rows = i;
+		}
+	}
+
+	var dependencies = dependentCols(matrix, P, rows, cols);
+	
+	if (dependencies.length == 0) 
+		output = "<ul><li>Colie words are independent!</li></ul>\n";	
+	else {
+		var output = new String("<ul>");
+		for (i=0; i<dependencies.length; i++)
+			output = output + "<li>" + document.getElementById("eil"+(dependencies[i])).value + " (row " + dependencies[i] + ") is not independent of earlier rows.</li>\n"; 
+		output = output + "</ul>\n";
+	}
+
+	document.getElementById("Eil dep").innerHTML = output;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// dependentCols
+//    does row reduction with partial pivoting to look for columns with no pivots
+//    these columns are dependent on previous ones.
+//  --> returns an array of columns which are not independent
+//
+//  ERRORS OCCUR WITH MATRICES LARGER THAN 1,500 ROWS!!!
+//
+function dependentCols(matrix, P, rows, cols){
+
+	var dependencies = new Array();
+	var row=1;
+
+	for (col=1; (row<rows) && (col<cols); col++) {
+
+		var maxrow = row;                             // find max element in col	
+		for (i=row+1; i<rows; i++)  
+			if (Math.abs(matrix[P[maxrow]][col]) < Math.abs(matrix[P[i]][col]))
+				maxrow = i;
+
+		if (Math.abs(matrix[P[maxrow]][col]) > .0000000001) {   // did we find a new pivot?
+
+			var tmp = P[maxrow]; P[maxrow] = P[row]; P[row] = tmp;  // permute rows
+
+			for (i=row+1; i<rows; i++) {
+				if (Math.abs(matrix[P[i]][col]) > .0000000001) {
+					var scale = matrix[P[i]][col]/matrix[P[row]][col];
+					for (j=col+1; j<cols; j++)
+						matrix[P[i]][j] = matrix[P[i]][j] - scale*matrix[P[row]][j]; 
+				}
+				matrix[P[i]][col] = 0;
+			}
+			row++;  
+
+		} else {
+			dependencies.push(col);
+		}
+	}
+
+	for (; col<cols; col++)
+		dependencies.push(col);
+
+	return dependencies;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//  toggleInst
+//    hides/shows the instructions
+//
+function toggleInst() {
+	var inst = document.getElementById("directions");
+	var toggle = document.getElementById("toggle");
+
+	if (inst.style.display=="none") {
+		inst.style.display="inline";
+		toggle.innerHTML="Hide instructions";
+	} else {
+		inst.style.display="none";
+		toggle.innerHTML="Show instructions";
+	}
+}
+
+
+</script>
+
+</head>
+<body>
+
+<div>
+<span id="directions" style="position:relative;display:inline;" onclick="toggleInst()">
+This script will compute the pairing of lie coalgebra and lie algebra elements.
+Along the top row, enter lie algebra elements in the form "[[[[[2,1],1],1],1],[2,1]]"
+(commas optional) using the numbers 0-9.  Along the left side, enter lie coalgebra elements in the form 
+"1211121" also using the numbers 0-9.  The "+/-" buttons add/remove rows and colums.  
+The "compute pairings" button does computations.
+</span>
+<a href="javascript:toggleInst();" id="toggle">
+Hide instructions.
+</a>
+</div>
+
+<p></p>
+
+
+<form name="computations" id="computations" action="https://users.metu.edu.tr/home202/benjamin/wwwhome/pairing.html" method="get">
+	<table id="data" border="1">
+		<tbody>
+			<tr>
+				<td><input type="button" value="Compute!" onclick="doPairing()"></td>
+				<td><input type="text" name="lie1" id="lie1" value="[[[[[21]1]1]1][21]]" style="width:100px"></td>
+				<td><input type="button" value="+" onclick="addCol(&#39;data&#39;)"><input type="button" value="-" onclick="delCol(&#39;data&#39;)"></td>
+			</tr>
+			<tr id="eilRow1">
+				<td><input type="text" name="eil1" id="eil1" value="1211121" size="10" style="float:right;"></td>
+				<td> </td>
+				<td><input type="button" value="cycle" onclick="cycleRow(&quot;eil1&quot;)"> </td>
+			</tr>
+			<tr>
+				<td><input type="button" value="+" onclick="addRow(&#39;data&#39;)"><input type="button" value="-" onclick="delRow(&#39;data&#39;)"></td>
+				<td> </td>
+				<td> </td>
+		</tr></tbody>
+	</table>
+</form>
+
+Nonzero Pairings: <span id="nonzero"> </span>
+&nbsp; &nbsp; &nbsp; &nbsp;
+Cell width = <input type="text" name="newWidth" id="newWidth" value="100" size="3">px
+
+<script>
+	document.getElementById('newWidth').onkeypress = function(e){
+		if (!e) e = window.event;
+		var keyCode = e.keyCode || e.which;
+		if (keyCode == '13'){
+			cellWidth = document.getElementById("newWidth").value;
+
+			var inputs = document.getElementsByTagName('input');
+
+			for (var i = 0; i < inputs.length; i++)
+				if (inputs[i].name.substring(0,3) == "lie")
+			   inputs[i].style.width = cellWidth;
+
+			return false;
+		}
+	}
+</script>
+
+
+<p>
+
+<input type="button" value="Invertible?" onclick="checkInv(&#39;data&#39;)">
+<span id="invertibility"> </span>
+
+</p><p>
+
+<input type="button" value="Lie dependencies" onclick="checkLie(&#39;data&#39;)">
+<br>
+</p><div id="Lie dep"></div>
+
+<p>
+
+<input type="button" value="Colie dependencies" onclick="checkEil(&#39;data&#39;)">
+<br>
+</p><div id="Eil dep"></div>
+
+<p>
+
+<input type="button" value="Generate LS words" onclick="genEil(&#39;data&#39;, toLSWord)">
+<input type="button" value="Cycle words (One letter)" onclick="cycleLetter(&#39;data&#39;)">
+<input type="button" value="Cycle half (One rank)" onclick="cycleHalf(&#39;data&#39;)">
+<br>
+<input type="button" value="Generate DL words" onclick="genEil(&#39;data&#39;, toDLWord)">
+
+<br>
+</p><div id="Gen colie"></div>
+<p>
+
+<input type="button" value="Generate LS brackets" onclick="genLieType(&#39;data&#39;,bracketWordLS,&#39;LS&#39;)"> 
+<br>
+<input type="button" value="Generate left-greedy brackets" onclick="genLieType(&#39;data&#39;,bracketWordLeftGreedy,&#39;left greedy&#39;)"> 
+<input type="button" value="Generate right-greedy brackets" onclick="genLieType(&#39;data&#39;,bracketWordRightGreedy,&#39;right greedy&#39;)">
+<br>
+<input type="button" value="Generate Configuration brackets" onclick="genLieType(&#39;data&#39;,bracketWordConfig,&#39;Configuration&#39;)"> 
+<input type="button" value="Generate Chibrikov brackets" onclick="genLieType(&#39;data&#39;,bracketWordChib,&#39;Chibrikov&#39;)">
+<br>
+<input type="button" value="Generate DL-Configuration brackets" onclick="genLieType(&#39;data&#39;,bracketDLWordConfig,&#39;DL Configuration&#39;)"> 
+<input type="button" value="Generate DL-Chibrikov brackets" onclick="genLieType(&#39;data&#39;,bracketDLWordChib,&#39;DL Chibrikov&#39;)"> 
+</p><div id="Gen lie"></div>
+
+
+
+</body></html>
