@@ -1,1 +1,39 @@
-
+cff-version: 1.2.0
+title: coLie
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Benjamin
+    family-names: Walter
+    email: benjamin.walter@uvi.edu
+    affiliation: University of the Virgin Islands
+    orcid: 'https://orcid.org/0000-0002-9237-0767'
+  - given-names: Aydin
+    family-names: Ozbek
+    affiliation: University of Oregon
+identifiers:
+  - type: url
+    value: 'https://arxiv.org/abs/2403.20264'
+    description: Infinitesimal calculations in fundamental groups
+  - type: url
+    value: 'https://arxiv.org/abs/1510.06984'
+    description: The left-greedy Lie algebra basis and star graphs
+  - type: url
+    value: 'https://arxiv.org/abs/math/0610437'
+    description: >-
+      Lie coalgebras and rational homotopy theory, I: Graph
+      coalgebras
+repository-code: 'https://github.com/benwalt/coLie/'
+abstract: >-
+  Python / Sage code for making computations using Lie
+  coalgebra symbols / tree symbols and Lie algebra brackets
+  / group elements.
+keywords:
+  - python
+  - Lie algebra
+  - Lie coalgebra
+  - tree symbol
+  - letter braiding
+license: GPL-2.0-or-later
