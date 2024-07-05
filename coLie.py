@@ -2,6 +2,7 @@
 #
 # Data structures and methods for computing with coLie symbols
 #  © 2024 Benjamin Walter <benjamin.walter@uvi.edu>
+#      (dedicated to the memory of Aydin Ozbek)
 #
 # Included classes:
 #   LieTree( bracket string )
@@ -142,6 +143,8 @@ class LieTree(ValueTree):
          The weight (number of bracket symbols) of bracket
     bracket  : list of LieTrees
          The left and right subbrackets
+    short    : string
+         Short version of bracket (don't print ,)
     """
 
     
@@ -150,7 +153,7 @@ class LieTree(ValueTree):
         
         if root:            # on initial call, strip whitespace, comma, and ]
             #                 (assume valid bracket input with single letter entries)
-            bracket = bracket.translate(str.maketrans('', '', ',] \n\t\r'))
+            bracket = re.sub(r'[\],\s]', '', bracket)
      
         if bracket == "":
             return
@@ -181,31 +184,8 @@ class LieTree(ValueTree):
         self._branches = bracket
         self.value = f'[{self._branches[0].value},{self._branches[1].value}]'
         self.weight = 1 + self._branches[0].weight + self._branches[1].weight
-    
-    
-    
-    
-    ###################
-    #
-    # Interesting things that aren't currently used
-    #    
-    def __mul__(self, other):
-        """Overload multiplication to be Lie bracket"""
-        
-        if isinstance(other, LieTree):
-            product = LieTree()
-        
-            product.bracket = [ self , other ]
-            
-            return product
-        
-        return NotImplemented
 
-        
-    def __repr__(self):
-        return f"LieTree('{self.value}')"
-    
-    
+
     @property
     def left(self):
         """Left subbracket expression"""
@@ -224,7 +204,6 @@ class LieTree(ValueTree):
         
         return None        
     
-
     @left.setter
     def left(self, subbracket):
         """set left subbracket -- only do this at the root!"""
@@ -252,6 +231,42 @@ class LieTree(ValueTree):
             self.value  = f'[{self._branches[0].value},{self._branches[1].value}]'
             self.weight = 1 + self._branches[0].weight + self._branches[1].weight
         
+    
+    @property
+    def short(self):
+        return re.sub(',','', self.value)
+    
+    @short.setter         # you probably shouldn't change the bracket value of a node
+    def short(self,string):
+        value = list(string)
+        for i in reversed(range(1,len(value))):
+            if ((value[i-1].isalpha() and value[i].isalpha()) or
+                (value[i-1] == ']'    and value[i].isalpha()) or
+                (value[i-1].isalpha() and value[i] == '[')):
+                value[i:i] = [',']
+        self.value = ''.join(value)
+        
+    
+    ###################
+    #
+    # Interesting things that aren't currently used
+    #    
+    def __mul__(self, other):
+        """Overload multiplication to be Lie bracket"""
+        
+        if isinstance(other, LieTree):
+            product = LieTree()
+        
+            product.bracket = [ self , other ]
+            
+            return product
+        
+        return NotImplemented
+
+        
+    def __repr__(self):
+        return f"LieTree('{self.value}')"
+
 
 ##################################################################
 ##################################################################
@@ -305,6 +320,7 @@ class EilWord():
         #########################
         #
         # Counting configuration braidings in words using algorithm from [GOSW]
+        #   (This algorithm is originally due to Aydin Ozbek)
         #
         if isinstance(other, SignedWord):        # Algorithm in [GOSW]:
             
@@ -587,19 +603,7 @@ class EilTree(ValueTree):
             eil.value  = self.value
             
         else:    
-            eil.subsymbols = [symbol.__excise(subsymbol) for symbol in self.subsymbols if not symbol is subsymbol]
-            
-            #for symbol in self.subsymbols:       # Otherwise copy all branches
-            #    if not symbol is subsymbol:      #  that aren't the subsymbol to excise
-            #        eil._branches.append(symbol.__excise(subsymbol))
-        
-            ## Then manually rebuild the symbol value and weight by looking at those of branches
-            ##  Note: the way this is currently implemented will move the 'free' letter to the end of the symbol
-            
-            #eil.value  = ''.join([f'({str(branch)})' for branch in eil.subsymbols]+[eil.decoration])
-            #eil.weight = sum([branch.weight + 1 for branch in eil.subsymbols])      
-
-            
+            eil.subsymbols = [symbol.__excise(subsymbol) for symbol in self.subsymbols if not symbol is subsymbol]          
             
         return eil
     
@@ -614,8 +618,33 @@ class EilTree(ValueTree):
         self.weight = sum([branch.weight + 1 for branch in self._branches])
        
         # self.weight = self.value.count('(')  # this should be equivalent, but probably slower?
-    
-    
+ 
+
+    # I like to write free elements last, so append() and extend()  will actually insert at start...
+    def append(self, subsymbol):
+        """Insert new subsymbol, updating weight and value"""
+        self._branches[:0] = [subsymbol]                  # insert subsymbol at start
+        self.weight += subsymbol.weight+1                 # add to weight
+        self.value   = f'({subsymbol.value}){self.value}' # add to value 
+        
+    def extend(self, subsymbols):
+        """Insert array of subsymbols, updating weight and value"""
+        self._branches[:0] = subsymbols
+        self.weight += sum([symbol.weight+1 for symbol in subsymbols])
+        tmp          = ')('.join([symbol.value for symbol in subsymbols])
+        self.value   = f'({tmp}){self.value}'
+
+    def copy(self):
+        """Create a deep copy of EilTree"""
+        eil = EilTree()
+        eil.decoration = self.decoration
+        eil.value , eil.weight = self.value , self.weight
+                
+        if len(self._branches) > 0:
+            eil._branches = [subsymbol.copy() for subsymbol in self._branches]
+        
+        return eil
+        
     ###################
     #
     # Interesting things that aren't currently used
@@ -691,7 +720,7 @@ class EilTree(ValueTree):
         subsymbols = iter(self)
         next(subsymbols)    # the first term in the iterator is the entire symbol (skip it)
         
-        return ((subsymbol,self.__quotient(subsymbol)) for subsymbol in subsymbols)
+        return ((subsymbol,self.__excise(subsymbol)) for subsymbol in subsymbols)
     
 ##################################################################
 ##################################################################
