@@ -10,9 +10,6 @@ authors:
     email: benjamin.walter@uvi.edu
     affiliation: University of the Virgin Islands
     orcid: 'https://orcid.org/0000-0002-9237-0767'
-  - given-names: Aydin
-    family-names: Ozbek
-    affiliation: University of Oregon
 identifiers:
   - type: url
     value: 'https://arxiv.org/abs/2403.20264'
