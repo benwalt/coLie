@@ -1,7 +1,8 @@
-This code is dedicated to the memory of Aydin Ozbek.
+[This code is dedicated to the memory of Aydin Ozbek.]
 
 --------------------------------------------------------------------------------
-
+Description:
+------------
 This project contains Python / Sage code for working with Lie coalgebras and algebras.  
 
 Code is present both as python .py files and as jupyter notebook .ipynb files.
@@ -10,6 +11,8 @@ and functions to make computations.
 
 --------------------------------------------------------------------------------
 
+Acknowledgments:
+---------------
 Some of the algebra-coalgebra algorithms present were first coded by me in javascript 
 (see included pairing.html file from 2015).  
 
