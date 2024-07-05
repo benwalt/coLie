@@ -8,19 +8,19 @@ and functions to make computations.
 
 --------------------------------------------------------------------------------
 
-File listing:
+File listing: 
 -------------
 **git files:**
 * **CITATION.cff** -- git citation information
 * **LICENSE**      -- GPL v2.0
 * **README.md**    -- this file
 
-**Jupyter Python Notebooks:**
-* **coLie.ipynb**     -- objects for Lie brackets, coLie symbols, signed words
-* **lieBasis.ipynb**  -- functions creating LS words, making Lie bracket bases, 
+**Jupyter Python Notebooks:**  (Links to [CoCalc](https://cocalc.com/) jupyter notebooks)
+* [**coLie.ipynb**](https://cocalc.com/share/public_paths/f04fa33762daab5f18dd3d064d9cce9a184a9a49)     -- objects for Lie brackets, coLie symbols, signed words
+* [**lieBasis.ipynb**](https://cocalc.com/share/public_paths/ccde0bda31c37b3eef778f4b384d30f93cc45b5d)  -- functions creating LS words, making Lie bracket bases, 
                      and coLie symbol bases
 
-**Python:**
+**Python:** 
 * **coLie.py**        -- Python code from coLie.ipynb
 * **lieBasis.py**     -- Python code from lieBasis.ipynb
 
