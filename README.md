@@ -1,4 +1,4 @@
-[This code is dedicated to the memory of Aydin Ozbek.]
+*This code is dedicated to the memory of Aydin Ozbek.*
 
 --------------------------------------------------------------------------------
 Description:
@@ -27,26 +27,27 @@ The Lyndon word generation algorithm I use is based off of C code by Joe Sawada
 File listing:
 -------------
 git files:
-  CITATION.cff -- git citation information
-  LICENSE      -- GPL v2.0
-  README.md    -- this file
+  **CITATION.cff** -- git citation information
+  **LICENSE**      -- GPL v2.0
+  **README.md**    -- this file
 
 Jupyter Python Notebooks:
-  coLie.ipynb     -- objects for Lie brackets, coLie symbols, signed words
-  lieBasis.ipynb  -- functions creating LS words, making Lie bracket bases, 
+  **coLie.ipynb**     -- objects for Lie brackets, coLie symbols, signed words
+  **lieBasis.ipynb**  -- functions creating LS words, making Lie bracket bases, 
                      and coLie symbol bases
 
 Python:
-  coLie.py        -- Python code from coLie.ipynb
-  lieBasis.py     -- Python code from lieBasis.ipynb
+  **coLie.py**        -- Python code from coLie.ipynb
+  **lieBasis.py**     -- Python code from lieBasis.ipynb
 
 Javascript (HTML):
-  pairing.html    -- javascript code from 2015 making LS words, Lie bracket bases,
+  **pairing.html**    -- javascript code from 2015 making LS words, Lie bracket bases,
                      computing pairing matrices, and checking for invertibility
 
 
 ---------------------------------------------------------------------------------
-
+References:
+-----------
 These algorithms are based off of theory present in:
 
 Lie algebra - coalgebra pairings:
