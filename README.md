@@ -52,6 +52,12 @@ Lie algebra - coalgebra pairings:
 Bases of Lie coalgebras / Lie algebras
    * B. Walter and A. Shiri. The left-greedy Lie algebra basis and star graphs
      -   https://arxiv.org/abs/1510.06984
+   * B. Walter.  The configuration basis of a Lie algebra and its dual
+     -   https://arxiv.org/abs/1010.4765
+   * B. Walter.  The Lie algebra configuration pairing
+     -   https://arxiv.org/abs/1010.4732
+   * E.S. Chibrikov.  A right normed basis for free Lie algebras and Lyndon–Shirshov words
+     -   https://core.ac.uk/download/pdf/82357333.pdf 
 
 Letter braiding and group elements
    * N. Gadish, A. Ozbek, D. Sinha, B. Walter. Infinitesimal calculations in fundamental groups
