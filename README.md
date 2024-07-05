@@ -16,6 +16,9 @@ Some of the algebra-coalgebra algorithms present were first coded by me in javas
 The letter braiding computations in EilWord and EilTree are based off work by Aydin Ozbek 
  -  https://github.com/AydinOzbek/Hopf_Invariants
 
+The Lyndon word generation algorithm I use is based off of C code by Joe Sawada 
+ -   http://combos.org/necklace
+
 ---------------------------------------------------------------------------------
 
 File listing:
