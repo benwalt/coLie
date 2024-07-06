@@ -55,6 +55,10 @@ These algorithms are based off of theory present in the following papers.
   * D. Sinha and B. Walter. Lie coalgebras and rational homotopy theory II: Hopf invariants
      -  https://arxiv.org/abs/0809.5084
 
+**Letter braiding and group elements.**
+   * N. Gadish, A. Ozbek, D. Sinha, B. Walter. Infinitesimal calculations in fundamental groups
+     -   https://arxiv.org/abs/2403.20264
+    
 **Bases of Lie coalgebras / Lie algebras.**
    * B. Walter and A. Shiri. The left-greedy Lie algebra basis and star graphs
      -   https://arxiv.org/abs/1510.06984
@@ -64,11 +68,6 @@ These algorithms are based off of theory present in the following papers.
      -   https://arxiv.org/abs/1010.4732
    * E.S. Chibrikov.  A right normed basis for free Lie algebras and Lyndon–Shirshov words
      -   https://core.ac.uk/download/pdf/82357333.pdf 
-
-**Letter braiding and group elements.**
-   * N. Gadish, A. Ozbek, D. Sinha, B. Walter. Infinitesimal calculations in fundamental groups
-     -   https://arxiv.org/abs/2403.20264
-
 
 **Further reading.**
    * N. Gadish. Letter-braiding: a universal bridge between combinatorial group theory and topology
