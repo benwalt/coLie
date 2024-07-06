@@ -6,6 +6,8 @@ Code is present both as python .py files and as jupyter notebook .ipynb files.
 The jupyter notebooks give explanations and small examples using included objects 
 and functions to make computations.
 
+TODO: Implement code for non-free Lie algebras as groups.
+
 --------------------------------------------------------------------------------
 
 File listing: 
