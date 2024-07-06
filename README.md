@@ -10,7 +10,7 @@ and functions to make computations.
 
 File listing: 
 -------------
-**git files:**
+**github files:**
 * **CITATION.cff** -- git citation information
 * **LICENSE**      -- GPL v2.0
 * **README.md**    -- this file
