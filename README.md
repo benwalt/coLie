@@ -54,6 +54,8 @@ These algorithms are based off of theory present in the following papers.
      -  https://arxiv.org/abs/math/0610437
   * D. Sinha and B. Walter. Lie coalgebras and rational homotopy theory II: Hopf invariants
      -  https://arxiv.org/abs/0809.5084
+  * B. Walter.  The Lie algebra configuration pairing
+     -   https://arxiv.org/abs/1010.4732
 
 **Letter braiding and group elements.**
    * N. Gadish, A. Ozbek, D. Sinha, B. Walter. Infinitesimal calculations in fundamental groups
@@ -64,8 +66,6 @@ These algorithms are based off of theory present in the following papers.
      -   https://arxiv.org/abs/1510.06984
    * B. Walter.  The configuration basis of a Lie algebra and its dual
      -   https://arxiv.org/abs/1010.4765
-   * B. Walter.  The Lie algebra configuration pairing
-     -   https://arxiv.org/abs/1010.4732
    * E.S. Chibrikov.  A right normed basis for free Lie algebras and Lyndon–Shirshov words
      -   https://core.ac.uk/download/pdf/82357333.pdf 
 
