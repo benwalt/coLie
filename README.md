@@ -51,7 +51,7 @@ References:
 -----------
 These algorithms are based off of theory present in the following papers.
 
-**Lie algebra - coalgebra pairings.**
+**Lie algebra - coalgebra pairings.**  *(using graphs for coLie)*
   * D. Sinha and B. Walter. Lie coalgebras and rational homotopy theory, I: Graph coalgebras
      -  https://arxiv.org/abs/math/0610437
   * D. Sinha and B. Walter. Lie coalgebras and rational homotopy theory II: Hopf invariants
@@ -59,7 +59,7 @@ These algorithms are based off of theory present in the following papers.
   * B. Walter.  The Lie algebra configuration pairing
      -   https://arxiv.org/abs/1010.4732
 
-**Letter braiding and group elements.**
+**Letter braiding and group elements.**  *(introduces symbols for coLie!)*
    * N. Gadish, A. Ozbek, D. Sinha, B. Walter. Infinitesimal calculations in fundamental groups
      -   https://arxiv.org/abs/2403.20264
     
