@@ -20,7 +20,6 @@
 
 
 import math   # Duval's algorithm genLS_old() uses math.ceil()
-from coLie import *
 
 #######################################################################
 #######################################################################
@@ -537,3 +536,39 @@ def symbolStar(word):
     
 #######################################################################
 #######################################################################    
+
+def bracket_to_left(bracket,short=False):
+    """Use orthogonal projection and star symbols to write Lie brackets in terms of Left-Greedy Basis
+       
+       Arguments:
+       ----------
+        bracket : string or LieTree
+           Lie bracket expression to convert
+        short   : boolean  [False]
+           Write output brackets in 'short form' (i.e. without ,)
+           
+       Result:
+       -------
+        dictionary { bracket : coefficient }
+           
+    """
+    if not isinstance(bracket,LieTree):
+        bracket = LieTree(bracket)
+    
+    result = dict()
+    
+    for word in genLS(bracket.letters()):
+        eil, lie = symbolStar(word) , bracketLeft(word)
+        
+        coeff = (eil * bracket) / (eil * lie)
+        
+        if coeff != 0:
+            if short:
+                result[lie.short] = int(coeff)
+            else: 
+                result[str(lie)] = int(coeff)
+            
+    return result
+
+#######################################################################
+#######################################################################  

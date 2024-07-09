@@ -59,7 +59,9 @@ class ValueTree():
         """weight is number of edges, len is number of vertices"""
         return self.weight + 1
     
-
+    def letters(self):
+        """Get letters and multiplicities from tree"""
+        return ''.join(sorted(re.sub(r'[/\W+/g]', '', self.value)))
     
     #########################
     # & is 'weak pairing' -- verify that objects use same letters with same multiplicity
@@ -245,8 +247,8 @@ class LieTree(ValueTree):
                 (value[i-1].isalpha() and value[i] == '[')):
                 value[i:i] = [',']
         self.value = ''.join(value)
-        
     
+
     ###################
     #
     # Interesting things that aren't currently used
@@ -424,6 +426,8 @@ class EilWord():
                         
         return ''.join(symbol) 
 
+    def letters(self):
+        return ''.join(sorted(word))
     
     @property
     def weight(self):
@@ -644,7 +648,8 @@ class EilTree(ValueTree):
             eil._branches = [subsymbol.copy() for subsymbol in self._branches]
         
         return eil
-        
+ 
+
     ###################
     #
     # Interesting things that aren't currently used
@@ -899,5 +904,7 @@ class SignedWord():
     def __iter__(self):
         return iter(self.word)      
 
+    def letters(self):
+        return ''.join(sorted(set([letter.value for letter in self.word])))
     
 ##################################################################
