@@ -427,7 +427,7 @@ class EilWord():
         return ''.join(symbol) 
 
     def letters(self):
-        return ''.join(sorted(word))
+        return ''.join(sorted(self.value))
     
     @property
     def weight(self):
