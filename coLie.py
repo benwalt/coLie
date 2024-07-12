@@ -452,7 +452,7 @@ class EilWord():
     
     def cobracket(self):
         """This returns a generator which yields tuples of the cobracket (cutting the word at each position)"""
-        return ( (EilWord(self.value[:n]), EilWord(self.value[n:]))  for n in range(1, len(self.value)) )
+        return ( (EilWord(self.value[:n]), EilWord(self.value[n:]))  for n in range(1, len(self.value)-1) )
     
     
 ##################################################################
