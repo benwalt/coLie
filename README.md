@@ -62,6 +62,7 @@ These algorithms are based off of theory present in the following papers.
 **Letter braiding and group elements.**  *(introduces symbols for coLie!)*
    * N. Gadish, A. Ozbek, D. Sinha, B. Walter. Infinitesimal calculations in fundamental groups
      -   https://arxiv.org/abs/2403.20264
+   * B. Walter. AlgTopPR2024 [conference presentation slides](https://drive.google.com/file/d/1-WLMc-cmm1w-P_ho8z-kwnvECii2lLib/view)
     
 **Bases of Lie coalgebras / Lie algebras.**
    * B. Walter and A. Shiri. The left-greedy Lie algebra basis and star graphs
