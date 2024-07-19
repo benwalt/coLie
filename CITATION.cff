@@ -5,7 +5,7 @@ message: >-
   metadata from this file.
 type: misc
 authors:
-  - given-names: Benjamin
+  - given-names: Ben
     family-names: Walter
     email: benjamin.walter@uvi.edu
     affiliation: University of the Virgin Islands
