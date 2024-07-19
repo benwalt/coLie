@@ -3,13 +3,14 @@ title: coLie
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
-type: software
+type: misc
 authors:
   - given-names: Benjamin
     family-names: Walter
     email: benjamin.walter@uvi.edu
     affiliation: University of the Virgin Islands
     orcid: 'https://orcid.org/0000-0002-9237-0767'
+    arXiv: 'https://arxiv.org/a/walter_b_1.html'
 identifiers:
   - type: url
     value: 'https://arxiv.org/abs/2403.20264'
@@ -19,9 +20,7 @@ identifiers:
     description: The left-greedy Lie algebra basis and star graphs
   - type: url
     value: 'https://arxiv.org/abs/math/0610437'
-    description: >-
-      Lie coalgebras and rational homotopy theory, I: Graph
-      coalgebras
+    description: Lie coalgebras and rational homotopy theory, I: Graph coalgebras
 repository-code: 'https://github.com/benwalt/coLie/'
 abstract: >-
   Python / Sage code for making computations using Lie
