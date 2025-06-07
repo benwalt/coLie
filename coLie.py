@@ -53,7 +53,10 @@ class ValueTree():
     def __str__(self):
         """String version of tree is value at root"""
         return self.value
-    
+
+    def __hash__(self):
+        """Hash using the value of supported tree"""
+        return hash(self.value)
     
     def __len__(self):
         """weight is number of edges, len is number of vertices"""
@@ -408,7 +411,9 @@ class EilWord():
     
     def __str__(self):
         return self.value
-    
+
+    def __hash__(self):
+        return hash(self.value);
     
     
     ###################
@@ -852,6 +857,14 @@ class SignedLetter():
     def __str__(self):
         return f'{self.value}' if self.sign else f'{self.value}\N{SUPERSCRIPT MINUS}\N{SUPERSCRIPT ONE}'
 
+    def __repr__(self):
+        return f'SignedLetter("{self.value}",{"1" if self.sign else "-1"})'
+
+    def short(self):
+        return f'{self.value}{"" if self.sign else "-"}'
+
+    def __hash__(self):
+        return hash(self.short())
 
 ##################################################################
 
@@ -900,6 +913,12 @@ class SignedWord():
             
     def __str__(self):
         return ''.join([str(x) for x in self.word])
+
+    def __repr__(self):
+        return 'SignedWord("' + ''.join([x.short() for x in self.word]) + '")'
+    
+    def __hash__(self):
+        return hash(''.join([x.short() for x in self.word]))
         
     def __iter__(self):
         return iter(self.word)      
